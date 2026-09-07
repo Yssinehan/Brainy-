@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from personal_llm.memory.types import MemoryRecord
-from personal_llm.tools import ToolRegistry
-from personal_llm.tools.builtin import (
+from brainy.memory.types import MemoryRecord
+from brainy.tools import ToolRegistry
+from brainy.tools.builtin import (
     MemorySearchTool,
     ReadFileTool,
     RememberTool,
@@ -37,7 +37,7 @@ def test_registry_rejects_invalid_args(store):
 
 
 def test_memory_search_tool_finds_ingested_fact(store, vectors, router):
-    from personal_llm.memory.ingest import ingest_text
+    from brainy.memory.ingest import ingest_text
 
     ingest_text(store, vectors, router, text="The sky is blue on a clear day.", doc_id="doc1", source="test")
     tool = MemorySearchTool(store, vectors, router)
@@ -68,7 +68,7 @@ def test_read_file_tool_blocks_path_traversal(tmp_path):
     secret = tmp_path / "secret.txt"
     secret.write_text("top secret", encoding="utf-8")
     tool = ReadFileTool(str(workspace))
-    from personal_llm.tools.base import ToolError
+    from brainy.tools.base import ToolError
 
     with pytest.raises(ToolError, match="escapes"):
         tool.run(tool.args_schema(path="../secret.txt"))
@@ -78,7 +78,7 @@ def test_read_file_tool_missing_file_raises(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     tool = ReadFileTool(str(workspace))
-    from personal_llm.tools.base import ToolError
+    from brainy.tools.base import ToolError
 
     with pytest.raises(ToolError, match="no such file"):
         tool.run(tool.args_schema(path="ghost.txt"))
@@ -86,7 +86,7 @@ def test_read_file_tool_missing_file_raises(tmp_path):
 
 def test_web_fetch_tool_blocks_loopback():
     tool = WebFetchTool()
-    from personal_llm.tools.base import ToolError
+    from brainy.tools.base import ToolError
 
     with pytest.raises(ToolError, match="non-public"):
         tool.run(tool.args_schema(url="http://127.0.0.1:8080/"))
@@ -94,7 +94,7 @@ def test_web_fetch_tool_blocks_loopback():
 
 def test_web_fetch_tool_blocks_private_hostname():
     tool = WebFetchTool()
-    from personal_llm.tools.base import ToolError
+    from brainy.tools.base import ToolError
 
     with pytest.raises(ToolError, match="non-public"):
         tool.run(tool.args_schema(url="http://localhost/"))
@@ -102,7 +102,7 @@ def test_web_fetch_tool_blocks_private_hostname():
 
 def test_web_fetch_tool_rejects_non_http_scheme():
     tool = WebFetchTool()
-    from personal_llm.tools.base import ToolError
+    from brainy.tools.base import ToolError
 
     with pytest.raises(ToolError, match="http"):
         tool.run(tool.args_schema(url="ftp://example.com/file"))

@@ -1,5 +1,5 @@
-from personal_llm.graph.kg import ExtractedTriples, Triple, extract_and_store, store_triples
-from personal_llm.memory.identity import (
+from brainy.graph.kg import ExtractedTriples, Triple, extract_and_store, store_triples
+from brainy.memory.identity import (
     classify_entity_type,
     deterministic_entity_id,
     is_valid_entity_name,
@@ -7,8 +7,8 @@ from personal_llm.memory.identity import (
     normalize_relation,
     subsumes,
 )
-from personal_llm.memory.types import Chunk, KGEdge, KGNode
-from personal_llm.router.schemas import Completion
+from brainy.memory.types import Chunk, KGEdge, KGNode
+from brainy.router.schemas import Completion
 
 
 def test_normalize_canonical_key_collapses_surface_variants():
@@ -41,11 +41,11 @@ def test_deterministic_entity_id_is_pure_function_of_type_and_key():
 
 
 def test_classify_entity_type_is_deterministic_and_varies():
-    assert classify_entity_type("zaid") == "person"
+    assert classify_entity_type("yassine") == "person"
     assert classify_entity_type("personal llm") == "project"
     assert classify_entity_type("sqlite") == "tool"
     # same input, same output, every time - never a source of id drift
-    assert classify_entity_type("zaid") == classify_entity_type("zaid")
+    assert classify_entity_type("yassine") == classify_entity_type("yassine")
 
 
 def test_normalize_relation_maps_known_phrasings():
@@ -106,21 +106,21 @@ def test_is_valid_entity_name_rejects_junk_extractions():
 
 def test_is_valid_entity_name_accepts_real_entities():
     assert is_valid_entity_name("Personal LLM")
-    assert is_valid_entity_name("Zaid Ali Syed")
+    assert is_valid_entity_name("Yassine Hannaoui")
     assert is_valid_entity_name("SQLite")
     assert is_valid_entity_name("MGM University")
 
 
 def test_subsumes_only_when_strictly_longer_and_containing():
-    assert subsumes("zaid ali syed", "zaid")
-    assert not subsumes("zaid", "zaid ali syed")
-    assert not subsumes("zaid", "zaid")  # identical is not subsumption
+    assert subsumes("yassine hannaoui", "yassine")
+    assert not subsumes("yassine", "yassine hannaoui")
+    assert not subsumes("yassine", "yassine")  # identical is not subsumption
     assert not subsumes("personal llm engine", "recall")
 
 
 def test_merge_subsumed_people_folds_short_name_and_keeps_edges(store):
-    short = KGNode(type="person", name="Zaid")
-    full = KGNode(type="person", name="Zaid Ali Syed")
+    short = KGNode(type="person", name="Yassine")
+    full = KGNode(type="person", name="Yassine Hannaoui")
     project = KGNode(type="project", name="Personal LLM")
     for node in (short, full, project):
         store.upsert_entity(node)
@@ -130,7 +130,7 @@ def test_merge_subsumed_people_folds_short_name_and_keeps_edges(store):
 
     assert folded == 1
     people = [n for n in store.all_nodes() if n.type == "person"]
-    assert [n.name for n in people] == ["Zaid Ali Syed"]
+    assert [n.name for n in people] == ["Yassine Hannaoui"]
     # The edge survived the fold, repointed onto the surviving node.
     edges = store.all_edges()
     assert len(edges) == 1
@@ -138,7 +138,7 @@ def test_merge_subsumed_people_folds_short_name_and_keeps_edges(store):
 
 
 def test_merge_subsumed_people_leaves_unrelated_names_alone(store):
-    for name in ("Zaid Ali Syed", "Ada Lovelace"):
+    for name in ("Yassine Hannaoui", "Ada Lovelace"):
         store.upsert_entity(KGNode(type="person", name=name))
 
     assert store.merge_subsumed_people() == 0
@@ -198,8 +198,8 @@ def test_merge_folds_cleanly_when_the_keeper_already_has_the_same_edge(store):
     """Repointing an edge onto a keeper that already carries an identical
     (src, rel, dst) hit the UNIQUE constraint on `edges` and aborted the whole merge
     mid-fold, leaving the graph half-merged."""
-    short = KGNode(type="person", name="Zaid")
-    full = KGNode(type="person", name="Zaid Ali Syed")
+    short = KGNode(type="person", name="Yassine")
+    full = KGNode(type="person", name="Yassine Hannaoui")
     project = KGNode(type="project", name="Personal LLM")
     for node in (short, full, project):
         store.upsert_entity(node)
@@ -212,4 +212,4 @@ def test_merge_folds_cleanly_when_the_keeper_already_has_the_same_edge(store):
     edges = store.all_edges()
     assert len(edges) == 1
     assert edges[0].src == full.id and edges[0].dst == project.id
-    assert [n.name for n in store.all_nodes() if n.type == "person"] == ["Zaid Ali Syed"]
+    assert [n.name for n in store.all_nodes() if n.type == "person"] == ["Yassine Hannaoui"]

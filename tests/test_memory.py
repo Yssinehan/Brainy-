@@ -1,13 +1,13 @@
-from personal_llm.memory.types import Chunk, KGEdge, KGNode, MemoryRecord
+from brainy.memory.types import Chunk, KGEdge, KGNode, MemoryRecord
 
 
 def test_add_and_get_memory(store):
-    record = MemoryRecord(kind="fact", content="Zaid prefers concise answers.", source="user")
+    record = MemoryRecord(kind="fact", content="Yassine prefers concise answers.", source="user")
     store.add_memory(record)
 
     fetched = store.get_memory(record.id)
     assert fetched is not None
-    assert fetched.content == "Zaid prefers concise answers."
+    assert fetched.content == "Yassine prefers concise answers."
     assert fetched.kind == "fact"
     assert fetched.archived is False
 
@@ -74,7 +74,7 @@ def test_chunks_roundtrip(store):
 
 
 def test_kg_nodes_and_edges(store):
-    n1 = KGNode(type="entity", name="Zaid")
+    n1 = KGNode(type="entity", name="Yassine")
     n2 = KGNode(type="entity", name="Personal LLM")
     store.add_node(n1)
     store.add_node(n2)
@@ -82,7 +82,7 @@ def test_kg_nodes_and_edges(store):
 
     nodes = store.all_nodes()
     edges = store.all_edges()
-    assert {n.name for n in nodes} == {"Zaid", "Personal LLM"}
+    assert {n.name for n in nodes} == {"Yassine", "Personal LLM"}
     assert len(edges) == 1
     assert edges[0].rel == "builds"
 

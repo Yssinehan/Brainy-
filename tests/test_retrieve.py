@@ -1,5 +1,5 @@
-from personal_llm.memory.ingest import ingest_text
-from personal_llm.memory.retrieve import semantic_search
+from brainy.memory.ingest import ingest_text
+from brainy.memory.retrieve import semantic_search
 
 
 def test_semantic_search_ranks_relevant_chunk_first(store, vectors, router):
@@ -23,11 +23,11 @@ def test_semantic_search_ranks_relevant_chunk_first(store, vectors, router):
 def test_semantic_search_touches_memory_access_count(store, vectors, router):
     ingest_text(
         store, vectors, router,
-        text="Zaid is building Personal LLM.",
+        text="Yassine is building Personal LLM.",
         doc_id="doc-1", source="notes.md", extract_kg=False,
     )
 
-    semantic_search(store, vectors, router, "What is Zaid building?", k=3)
+    semantic_search(store, vectors, router, "What is Yassine building?", k=3)
 
     memories = store.list_memories(kind="semantic")
     assert any(m.access_count >= 1 for m in memories)

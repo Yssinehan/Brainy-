@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 
-**Context:** `docs/ROADMAP.md` originally filed voice and vision under "v2 (speculative) - research spikes before commitment," alongside genuinely harder things like voice cloning and live multi-speaker diarization. That triage was correct for *those* specific capabilities, but conflated them with plain speech-to-text, text-to-speech, and image OCR/description - all of which are mature, free, offline-capable technology today, not research. Zaid explicitly asked to reclassify this and build it now, so this ADR captures the "today's tech, not speculative" line, per the project's own critical-thinking mandate.
+**Context:** `docs/ROADMAP.md` originally filed voice and vision under "v2 (speculative) - research spikes before commitment," alongside genuinely harder things like voice cloning and live multi-speaker diarization. That triage was correct for *those* specific capabilities, but conflated them with plain speech-to-text, text-to-speech, and image OCR/description - all of which are mature, free, offline-capable technology today, not research. Yassine explicitly asked to reclassify this and build it now, so this ADR captures the "today's tech, not speculative" line, per the project's own critical-thinking mandate.
 
 **Decision:**
 - **Speech-to-text**: `faster-whisper` (CTranslate2-backed Whisper), CPU, `int8` compute, lazy-loaded on first use exactly like `LocalEmbedder` in `router/providers.py` - free, offline, no API key, model auto-downloads from Hugging Face on first run (same pattern as `sentence-transformers`).

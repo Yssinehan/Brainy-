@@ -1,7 +1,7 @@
 # Personal LLM - Product Requirements Document
 
 **Status:** v0.1 in active development
-**Owner:** Zaid Ali Syed
+**Owner:** Yassine Hannaoui
 **Tagline:** Your Second Brain. Your Digital Twin. Your Personal AI.
 
 ---
@@ -26,7 +26,7 @@ An AI that:
 
 | Persona | Description | Primary needs |
 |---|---|---|
-| **Zaid (primary)** | AI learner and builder, building public credibility via GitHub/LinkedIn, juggling multiple concurrent projects | Remembers project context across sessions; surfaces forgotten tasks; answers questions grounded in his own notes/code, not generic web knowledge |
+| **Yassine (primary)** | AI learner and builder, building public credibility via GitHub/LinkedIn, juggling multiple concurrent projects | Remembers project context across sessions; surfaces forgotten tasks; answers questions grounded in his own notes/code, not generic web knowledge |
 | **Busy professional** | Manages email, calendar, docs across many tools | Proactive summaries, deadline tracking, less context-switching |
 | **Researcher/learner** | Ingesting papers, courses, articles | RAG over a growing personal knowledge base with citations, skill-gap tracking |
 
@@ -112,7 +112,7 @@ Priority key: **P0** = v0.1 (this build) · **P1** = v0.2-v1.0 · **P2** = post-
 |---|---|
 | Engine importable as a Python package by other local projects | P0 |
 | Stable FastAPI surface for non-Python callers | P1 |
-| Public SDK / plugin marketplace for third parties | **P3** - premature before there's a single trusted user (Zaid) fully served |
+| Public SDK / plugin marketplace for third parties | **P3** - premature before there's a single trusted user (Yassine) fully served |
 
 ## 5. Non-Functional Requirements
 
@@ -133,7 +133,7 @@ Priority key: **P0** = v0.1 (this build) · **P1** = v0.2-v1.0 · **P2** = post-
 |---|---|
 | v0.1 | Ingest a folder of real notes; ask a question; get a cited, grounded answer; correctly say "not in memory" for an absent fact; works with network disabled except for the generation call. |
 | v0.2 | An agent completes a 2+ step task using at least one tool, fully audited. |
-| v1.0 | Used daily by Zaid for at least one real task (e.g. querying his own project notes) for 2+ consecutive weeks. |
+| v1.0 | Used daily by Yassine for at least one real task (e.g. querying his own project notes) for 2+ consecutive weeks. |
 
 ## 7. Out of Scope (explicitly, for now)
 

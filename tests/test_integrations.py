@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from personal_llm.integrations import ExternalItem, sync_external_items
+from brainy.integrations import ExternalItem, sync_external_items
 
 
 def _item(source="gmail", external_id="thread-1", title="Test subject", content="Test body") -> ExternalItem:
@@ -39,7 +39,7 @@ def test_sync_handles_mixed_new_and_existing(store, vectors, router):
 
 
 def test_sync_doc_id_includes_source():
-    from personal_llm.integrations.sync import _doc_id
+    from brainy.integrations.sync import _doc_id
 
     gmail_item = _item(source="gmail", external_id="abc")
     drive_item = _item(source="drive", external_id="abc")

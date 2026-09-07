@@ -66,7 +66,7 @@ class ModelRouter:
 
 **Selection logic (v0.1):**
 - `embed()` always uses the local `sentence-transformers` model - free, offline, no provider needed for ingest/retrieve to work at all.
-- `complete()` tries Ollama first **only if** `OLLAMA_HOST` is configured and reachable (health-checked once, cached); otherwise falls back to Gemini. This satisfies "hybrid local+cloud" without making Ollama a hard dependency (most users, including Zaid today, won't have it running).
+- `complete()` tries Ollama first **only if** `OLLAMA_HOST` is configured and reachable (health-checked once, cached); otherwise falls back to Gemini. This satisfies "hybrid local+cloud" without making Ollama a hard dependency (most users, including Yassine today, won't have it running).
 - Retry/backoff on 429/5xx reuses the exact pattern from `resume-job-fit-ai/analyzer.py:_generate` (3 attempts, 4s/8s backoff).
 
 **Confidence & disagreement (P1):** when both providers are configured, an optional "verify" mode calls both and flags disagreement rather than silently picking one. Not built in v0.1 (no second provider running by default).
@@ -119,7 +119,7 @@ Request/response bodies are the same Pydantic models used internally (`MemoryRec
 
 ## 9. SDK Design
 
-The SDK **is** the Python package: `pip install -e .` inside another project's venv (or a local path dependency) gives `from personal_llm.memory import MemoryStore`, `from personal_llm.rag import ask`. No separate SDK layer is built for v0.1 - premature given exactly one consumer (Zaid's other projects) exists today. A documented FastAPI surface (above) covers non-Python callers.
+The SDK **is** the Python package: `pip install -e .` inside another project's venv (or a local path dependency) gives `from personal_llm.memory import MemoryStore`, `from personal_llm.rag import ask`. No separate SDK layer is built for v0.1 - premature given exactly one consumer (Yassine's other projects) exists today. A documented FastAPI surface (above) covers non-Python callers.
 
 ## 10. Database Schemas
 

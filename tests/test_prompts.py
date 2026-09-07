@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from personal_llm.prompts import load_prompt
+from brainy.prompts import load_prompt
 
 # Literal copies of the text that used to be the inline `_SYSTEM` /
 # `_SYSTEM_TEMPLATE` constants, kept here (not re-derived from the .txt files)

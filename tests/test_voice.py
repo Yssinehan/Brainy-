@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from personal_llm.voice.stt import SpeechToText
-from personal_llm.voice.tts import TextToSpeech
+from brainy.voice.stt import SpeechToText
+from brainy.voice.tts import TextToSpeech
 
 
 class _FakeSegment:

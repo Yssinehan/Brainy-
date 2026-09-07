@@ -1,7 +1,7 @@
-from personal_llm.graph.kg import ExtractedTriples, Triple, extract_and_store, related_entities
-from personal_llm.memory.types import Chunk
-from personal_llm.router.providers import RouterError
-from personal_llm.router.schemas import Completion
+from brainy.graph.kg import ExtractedTriples, Triple, extract_and_store, related_entities
+from brainy.memory.types import Chunk
+from brainy.router.providers import RouterError
+from brainy.router.schemas import Completion
 
 
 class _KGRouter:
@@ -11,7 +11,7 @@ class _KGRouter:
         return [[0.0] for _ in texts]
 
     def complete(self, messages, schema=None):
-        parsed = ExtractedTriples(triples=[Triple(subject="Zaid", relation="builds", object="Personal LLM")])
+        parsed = ExtractedTriples(triples=[Triple(subject="Yassine", relation="builds", object="Personal LLM")])
         return Completion(text="", parsed=parsed, provider="fake", model="fake")
 
 
@@ -24,22 +24,22 @@ class _FailingRouter:
 
 
 def test_extract_and_store_creates_nodes_and_edges(store):
-    chunk = Chunk(doc_id="doc-1", ord=0, text="Zaid builds Personal LLM.")
+    chunk = Chunk(doc_id="doc-1", ord=0, text="Yassine builds Personal LLM.")
 
     count = extract_and_store(store, _KGRouter(), [chunk])
 
     assert count == 1
-    assert {n.name for n in store.all_nodes()} == {"Zaid", "Personal LLM"}
+    assert {n.name for n in store.all_nodes()} == {"Yassine", "Personal LLM"}
     edge = store.all_edges()[0]
     assert edge.rel == "creates"  # normalize_relation("builds") -> "creates"
     assert edge.meta["raw_relation"] == "builds"
 
 
 def test_related_entities_finds_one_hop_neighbor(store):
-    chunk = Chunk(doc_id="doc-1", ord=0, text="Zaid builds Personal LLM.")
+    chunk = Chunk(doc_id="doc-1", ord=0, text="Yassine builds Personal LLM.")
     extract_and_store(store, _KGRouter(), [chunk])
 
-    related = related_entities(store, "Zaid", hops=1)
+    related = related_entities(store, "Yassine", hops=1)
 
     assert any(r["name"] == "Personal LLM" for r in related)
 

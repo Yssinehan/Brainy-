@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from personal_llm.memory.ingest import chunk_text, ingest_text, read_file
+from brainy.memory.ingest import chunk_text, ingest_text, read_file
 
 
 def test_chunk_text_short_text_single_chunk():
@@ -42,10 +42,9 @@ def test_ingest_text_empty_text_ingests_nothing(store, vectors, router):
 
 
 def test_read_file_routes_images_through_ocr(monkeypatch, tmp_path):
-    monkeypatch.setattr("personal_llm.vision.ocr.extract_text_from_image", lambda path: "text from image")
+    monkeypatch.setattr("brainy.vision.ocr.extract_text_from_image", lambda path: "text from image")
     image_path = tmp_path / "screenshot.png"
     image_path.write_bytes(b"not-a-real-png")
-
     result = read_file(image_path)
 
     assert result == "text from image"

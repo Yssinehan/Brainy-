@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from personal_llm.review.self_review import (
+from brainy.review.self_review import (
     AuditSummary,
     NightShiftEntry,
     generate_self_review,

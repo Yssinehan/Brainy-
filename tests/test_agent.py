@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from personal_llm.agent import Agent, AgentStep, ToolInvocation
-from personal_llm.memory.ingest import ingest_text
-from personal_llm.tools import ToolRegistry
-from personal_llm.tools.builtin import MemorySearchTool, RememberTool
+from brainy.agent import Agent, AgentStep, ToolInvocation
+from brainy.memory.ingest import ingest_text
+from brainy.tools import ToolRegistry
+from brainy.tools.builtin import MemorySearchTool, RememberTool
 
 
 def test_agent_answers_immediately_when_no_tool_needed(store, vectors, router):
@@ -20,7 +20,7 @@ def test_agent_answers_immediately_when_no_tool_needed(store, vectors, router):
 
 
 def test_agent_calls_a_tool_then_answers(store, vectors, router):
-    ingest_text(store, vectors, router, text="Zaid's favorite language is Python.", doc_id="doc1", source="test")
+    ingest_text(store, vectors, router, text="Yassine's favorite language is Python.", doc_id="doc1", source="test")
     registry = ToolRegistry()
     registry.register(MemorySearchTool(store, vectors, router))
 
@@ -33,7 +33,7 @@ def test_agent_calls_a_tool_then_answers(store, vectors, router):
     ]
     agent = Agent(router, registry, store, allowed_permissions={"read_only"})
 
-    result = agent.run("what is Zaid's favorite language?")
+    result = agent.run("what is Yassine's favorite language?")
 
     assert result.succeeded
     assert result.final_answer == "Python"
@@ -78,7 +78,7 @@ def test_agent_stops_after_max_steps(store, vectors, router):
 def test_agent_falls_back_to_final_when_output_unparsed(store, vectors):
     class UnparsedRouter:
         def complete(self, messages, schema=None):
-            from personal_llm.router.schemas import Completion
+            from brainy.router.schemas import Completion
 
             return Completion(text="not json", parsed=None, provider="fake", model="fake")
 

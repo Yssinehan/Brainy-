@@ -2,9 +2,9 @@
 
 import pytest
 
-from personal_llm.router.providers import RouterError
-from personal_llm.router.router import ModelRouter
-from personal_llm.router.schemas import Completion, Message
+from brainy.router.providers import RouterError
+from brainy.router.router import ModelRouter
+from brainy.router.schemas import Completion, Message
 
 
 class _StubProvider:

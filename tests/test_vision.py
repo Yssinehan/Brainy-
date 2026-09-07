@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from personal_llm.router.providers import RouterError
-from personal_llm.router.router import ModelRouter
-from personal_llm.vision.ocr import VisionError, extract_text_from_image
+from brainy.router.providers import RouterError
+from brainy.router.router import ModelRouter
+from brainy.vision.ocr import VisionError, extract_text_from_image
 
 
 class _FakeImage:

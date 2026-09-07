@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
-from personal_llm.memory.interest_trends import (
+from brainy.memory.interest_trends import (
     TrendingKeyword,
     detect_interest_trends,
     detect_interest_trends_in_store,
     extract_keywords,
 )
-from personal_llm.memory.types import MemoryRecord
+from brainy.memory.types import MemoryRecord
 
 
 def _iso(days_ago: float) -> str:

@@ -1,6 +1,6 @@
 # NEXUS - Phase 0 handoff
 
-Last updated: 2026-08-24. **Phase 0 is complete. Phase 1 is stopped by Zaid's decision,
+Last updated: 2026-08-24. **Phase 0 is complete. Phase 1 is stopped by Yassine's decision,
 not blocked.**
 
 ## Status: Phase 0 done, Phase 1 not starting
@@ -11,7 +11,7 @@ prediction ledger, baselines and holdout harness) is **deliberately not being st
 The reasoning, so it is not relitigated from memory later:
 
 - Phase 0 was worth it on its own. It was debt paydown that found live defects in things
-  Zaid actually uses - a knowledge graph that was never a graph, a Lumi client that had
+  Yassine actually uses - a knowledge graph that was never a graph, a Lumi client that had
   drifted from its own gateway on four points at once, and a `lumi.db` stamped v1 while
   the code was at v5.
 - Phase 1's headline claim is weak even if it wins. "A model predicts which files I touch
@@ -73,20 +73,20 @@ keys split across types: 0
 near-duplicate keys:     1   [('v2', 'v3')]   <- genuinely different, not a duplicate
 ```
 
-205 nodes means 205 distinct entities. The corpus contains Zaid's full resume, so it
+205 nodes means 205 distinct entities. The corpus contains Yassine's full resume, so it
 genuinely holds several hundred named things (CSS, Flask, Figma, GitHub, Machine
 Learning, Chhatrapati Sambhajinagar). The 80 was pre-registered against a 202-node
 baseline produced by a much smaller triple set, so it was never a like-for-like
 comparison, and it scales with how much the extractor emits rather than with how well
 identity resolves.
 
-Recommendation, needing Zaid's sign-off: amend the plan to replace `entities <= 80` with
+Recommendation, needing Yassine's sign-off: amend the plan to replace `entities <= 80` with
 the duplication gate (distinct canonical keys == node count, and keys split across types
 == 0). That measures the real property and does not move with corpus size.
 
 `MAX_ENTITIES` has deliberately NOT been edited. The count check is still there and still
 failing. Changing a pre-registered kill condition after seeing the number is exactly what
-the plan's own kill condition #5 exists to prevent, so it stays visible until Zaid amends
+the plan's own kill condition #5 exists to prevent, so it stays visible until Yassine amends
 it on purpose.
 
 Single-provider extraction is also simply better: it moved the count 233 -> 205 and
@@ -125,8 +125,8 @@ All four were found by running the pipeline, not by reading it:
 
 ## lumi - steps 6 and 7
 
-Committed as `a800417` on Zaid's explicit go-ahead, which overrides lumi's standing
-"Zaid commits" rule for this change. lumi has no git remote, so it is local-only by
+Committed as `a800417` on Yassine's explicit go-ahead, which overrides lumi's standing
+"Yassine commits" rule for this change. lumi has no git remote, so it is local-only by
 design and there is nothing to push. 248 tests pass.
 
 Step 6 fixed all four `pllm.py` mismatches together (`query=` vs `q=`, `.get("results")`
@@ -166,4 +166,4 @@ only its own data in both directions. 37 tests pass. Committed and pushed as `08
 
 The exit gate as written: one DB, one Chroma dir, both absolute; tests green in all three
 repos; `stats()` identical from any CWD. All hold. The only open item is the entity-count
-threshold amendment described above, which is Zaid's call and not a build task.
+threshold amendment described above, which is Yassine's call and not a build task.

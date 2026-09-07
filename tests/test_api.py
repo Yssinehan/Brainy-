@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from personal_llm.engine import Engine
-from personal_llm.interfaces import api
-from personal_llm.voice import SpeechToText, TextToSpeech
+from brainy.engine import Engine
+from brainy.interfaces import api
+from brainy.voice import SpeechToText, TextToSpeech
 
 TOKEN = "test-token"
 
@@ -93,7 +93,7 @@ def test_voice_ask_endpoint_requires_token(monkeypatch, store, vectors, router):
 def test_load_or_create_gateway_token_persists_across_calls(tmp_path, monkeypatch):
     token_path = tmp_path / "gateway_token"
     monkeypatch.setattr(api, "_gateway_token", None)
-    monkeypatch.setattr(api, "get_settings", lambda: type("S", (), {"personal_llm_gateway_token_path": str(token_path)})())
+    monkeypatch.setattr(api, "get_settings", lambda: type("S", (), {"brainy_gateway_token_path": str(token_path)})())
 
     first = api._load_or_create_gateway_token()
 

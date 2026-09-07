@@ -8,10 +8,10 @@ import math
 
 import pytest
 
-from personal_llm import config
-from personal_llm.memory.store import MemoryStore
-from personal_llm.memory.vectors import VectorStore
-from personal_llm.router.schemas import Completion, VerifiedCompletion
+from brainy import config
+from brainy.memory.store import MemoryStore
+from brainy.memory.vectors import VectorStore
+from brainy.router.schemas import Completion, VerifiedCompletion
 
 EMBED_DIM = 32
 

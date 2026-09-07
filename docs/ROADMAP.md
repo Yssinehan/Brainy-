@@ -37,6 +37,6 @@
 
 ## Future Evolution
 
-**5-year vision:** Personal LLM is the substrate every one of Zaid's AI projects imports; it has years of consolidated memory, a rich personal knowledge graph, a handful of trustworthy agents (research, coding, career) operating under clear permissions, and optional voice/vision modes for hands-free use.
+**5-year vision:** Personal LLM is the substrate every one of Yassine's AI projects imports; it has years of consolidated memory, a rich personal knowledge graph, a handful of trustworthy agents (research, coding, career) operating under clear permissions, and optional voice/vision modes for hands-free use.
 
 **10-year vision (speculative, not designed):** A fully proactive digital twin capable of representing the user in low-stakes interactions (scheduling, first-pass email triage) with strong auditability, still local-first and user-owned - explicitly not a chase of "replace the user," but an amplifier under their control.

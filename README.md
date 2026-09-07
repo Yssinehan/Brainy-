@@ -1,6 +1,6 @@
 # Personal LLM
 
-[![CI](https://github.com/syzayd/personal-llm/actions/workflows/ci.yml/badge.svg)](https://github.com/syzayd/personal-llm/actions/workflows/ci.yml)
+[![CI](https://github.com/syzayd/BRAINY/actions/workflows/ci.yml/badge.svg)](https://github.com/syzayd/BRAINY/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-143%20passed%20offline-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -42,7 +42,7 @@ Full design docs live in [`docs/`](docs/): [PRD](docs/PRD.md), [Technical Design
   which reads memory content and calls a model for insights; this reads what the system
   itself has been doing.
 - **Ingest real Gmail/Drive content** (v1.0, `ingest-external`) fetched via Claude Code's
-  own already-authenticated MCP connectors - `personal_llm` holds no Google credentials
+  own already-authenticated MCP connectors - `brainy` holds no Google credentials
   of its own; see [ADR 0005](docs/DECISIONS/0005-external-integrations-via-mcp-bridge.md).
 - **Voice** (v2): transcribe audio locally (`transcribe`, `ask-voice`) via `faster-whisper`
   - free, offline, no API key - and optionally speak the answer back (`--speak`, `pyttsx3`).
@@ -55,8 +55,8 @@ Full design docs live in [`docs/`](docs/): [PRD](docs/PRD.md), [Technical Design
 ## Quickstart (under 5 minutes)
 
 ```powershell
-git clone https://github.com/syzayd/personal-llm
-cd personal-llm
+git clone https://github.com/syzayd/BRAINY
+cd BRAINY
 py -3.12 -m venv venv
 & "venv\Scripts\python" -m pip install -r requirements.txt
 & "venv\Scripts\python" -m pip install -e .
@@ -64,43 +64,43 @@ py -3.12 -m venv venv
 # Copy .env.example to .env and add your free Gemini key (https://aistudio.google.com/apikey)
 # Ingest and retrieve work with NO key at all - only `ask` needs a chat provider.
 
-# `pip install -e .` also installs a `personal-llm` console script - check it first:
-& "venv\Scripts\personal-llm.exe" --version
-& "venv\Scripts\personal-llm.exe" doctor
+# `pip install -e .` also installs a `BRAINY` console script - check it first:
+& "venv\Scripts\BRAINY.exe" --version
+& "venv\Scripts\BRAINY.exe" doctor
 
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ingest "data\samples\*.md"
-& "venv\Scripts\python" -m personal_llm.interfaces.cli recall "what is this project?"
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ask "what is this project?"
+& "venv\Scripts\python" -m brainy.interfaces.cli ingest "data\samples\*.md"
+& "venv\Scripts\python" -m brainy.interfaces.cli recall "what is this project?"
+& "venv\Scripts\python" -m brainy.interfaces.cli ask "what is this project?"
 
 # Agent (read-only tools by default; opt in per-run to riskier tiers)
-& "venv\Scripts\python" -m personal_llm.interfaces.cli agent "what is this project?"
-& "venv\Scripts\python" -m personal_llm.interfaces.cli agent "look up X on example.com" --allow-network
+& "venv\Scripts\python" -m brainy.interfaces.cli agent "what is this project?"
+& "venv\Scripts\python" -m brainy.interfaces.cli agent "look up X on example.com" --allow-network
 
 # Proactive review + verified answers
-& "venv\Scripts\python" -m personal_llm.interfaces.cli review --days 7
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ask "what is this project?" --verify
+& "venv\Scripts\python" -m brainy.interfaces.cli review --days 7
+& "venv\Scripts\python" -m brainy.interfaces.cli ask "what is this project?" --verify
 
 # Weekly self-review of the system's own activity (audit log + Night Shift build log)
-& "venv\Scripts\python" -m personal_llm.interfaces.cli self-review --days 7
+& "venv\Scripts\python" -m brainy.interfaces.cli self-review --days 7
 
 # External content (Gmail/Drive fetched elsewhere, e.g. via Claude Code's MCP - see ADR 0005)
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ingest-external "path\to\items.json"
+& "venv\Scripts\python" -m brainy.interfaces.cli ingest-external "path\to\items.json"
 
 # Voice (local, offline, free) and vision
-& "venv\Scripts\python" -m personal_llm.interfaces.cli transcribe "recording.wav"
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ask-voice "recording.wav" --speak
-& "venv\Scripts\python" -m personal_llm.interfaces.cli ingest "screenshot.png"          # OCR, needs Tesseract installed
-& "venv\Scripts\python" -m personal_llm.interfaces.cli describe-image "photo.jpg"       # needs GEMINI_API_KEY
+& "venv\Scripts\python" -m brainy.interfaces.cli transcribe "recording.wav"
+& "venv\Scripts\python" -m brainy.interfaces.cli ask-voice "recording.wav" --speak
+& "venv\Scripts\python" -m brainy.interfaces.cli ingest "screenshot.png"          # OCR, needs Tesseract installed
+& "venv\Scripts\python" -m brainy.interfaces.cli describe-image "photo.jpg"       # needs GEMINI_API_KEY
 ```
 
 Or the Streamlit chat UI:
 ```powershell
-& "venv\Scripts\python" -m streamlit run src\personal_llm\interfaces\app.py
+& "venv\Scripts\python" -m streamlit run src\brainy\interfaces\app.py
 ```
 
 Or the FastAPI service:
 ```powershell
-& "venv\Scripts\python" -m uvicorn personal_llm.interfaces.api:app --reload
+& "venv\Scripts\python" -m uvicorn brainy.interfaces.api:app --reload
 ```
 The HTTP gateway is CSRF-hardened: every request needs the `X-DreamOS-Token` header
 (value auto-created at `data/gateway_token` on first request), and anything carrying a

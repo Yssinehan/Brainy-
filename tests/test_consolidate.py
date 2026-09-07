@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from personal_llm.memory.consolidate import consolidate, decay_and_archive, flag_duplicates
-from personal_llm.memory.types import MemoryRecord
+from brainy.memory.consolidate import consolidate, decay_and_archive, flag_duplicates
+from brainy.memory.types import MemoryRecord
 
 
 def _old_timestamp(days: float) -> str:

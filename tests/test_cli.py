@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
-from personal_llm import __version__
-from personal_llm.engine import Engine
-from personal_llm.interfaces import cli
-from personal_llm.voice import SpeechToText, TextToSpeech
+from brainy import __version__
+from brainy.engine import Engine
+from brainy.interfaces import cli
+from brainy.voice import SpeechToText, TextToSpeech
 
 runner = CliRunner()
 

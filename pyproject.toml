@@ -3,22 +3,22 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "personal-llm"
+name = "BRAINY"
 version = "1.0.0"
 description = "Local-first personal memory + RAG engine - the reusable brain for future projects."
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [{ name = "Zaid Ali Syed" }]
+authors = [{ name = "Yassine Hannaoui" }]
 license = { text = "MIT" }
 
 [project.scripts]
-personal-llm = "personal_llm.interfaces.cli:app"
+BRAINY = "brainy.interfaces.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-"personal_llm.prompts" = ["*.txt"]
+"brainy.prompts" = ["*.txt"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

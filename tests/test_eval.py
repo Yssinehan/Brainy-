@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
-from personal_llm.eval import Assertion, EvalCase, run_eval
-from personal_llm.eval.cases import builtin_cases
-from personal_llm.interfaces.cli import app
+from brainy.eval import Assertion, EvalCase, run_eval
+from brainy.eval.cases import builtin_cases
+from brainy.interfaces.cli import app
 
 runner = CliRunner()
 
@@ -71,7 +71,7 @@ def test_eval_cli_command_exits_zero_and_prints_summary():
 
 
 def test_eval_cli_command_exits_nonzero_when_a_case_fails(monkeypatch):
-    import personal_llm.interfaces.cli as cli_module
+    import brainy.interfaces.cli as cli_module
 
     broken_case = EvalCase("always_fails", run=lambda: 1, assertions=[Assertion("is 2", lambda x: x == 2)])
     monkeypatch.setattr(cli_module, "builtin_cases", lambda: [broken_case])

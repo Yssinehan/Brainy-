@@ -17,7 +17,7 @@ It is sensitive to how much the extractor emits, so a corpus that genuinely cont
 several hundred distinct named things fails it while being perfectly deduplicated. The
 duplication block below measures the underlying property directly and does not move with
 corpus size. The count check is deliberately left in place and left failing; replacing it
-is a plan amendment and needs Zaid's sign-off, not a quiet edit to MAX_ENTITIES.
+is a plan amendment and needs Yassine's sign-off, not a quiet edit to MAX_ENTITIES.
 
 --verify-idempotent additionally re-applies the cached extraction over every chunk
 WITHOUT wiping the graph first, and asserts the node and edge counts do not move. That is

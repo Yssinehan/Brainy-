@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from personal_llm.memory.types import MemoryRecord
-from personal_llm.review.weekly import ReviewInsights, generate_review
+from brainy.memory.types import MemoryRecord
+from brainy.review.weekly import ReviewInsights, generate_review
 
 
 def _old_iso(days: float) -> str:
