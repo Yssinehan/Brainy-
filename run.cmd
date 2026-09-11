@@ -7,7 +7,7 @@ setlocal
 
 set "ROOT=%~dp0"
 
-start "Personal LLM - Chat" /D "%ROOT%" cmd /k "venv\Scripts\python -m streamlit run src/personal_llm/interfaces/app.py"
+start "Brainy - Chat" /D "%ROOT%" cmd /k "venv\Scripts\python -m streamlit run src/brainy/interfaces/app.py"
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$deadline=(Get-Date).AddSeconds(30); while((Get-Date) -lt $deadline) { try { Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:8501' -TimeoutSec 2 | Out-Null; break } catch { Start-Sleep -Milliseconds 500 } }; Start-Process 'http://localhost:8501'"
 

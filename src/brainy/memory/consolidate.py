@@ -10,13 +10,10 @@ import hashlib
 
 from pydantic import BaseModel
 
+from brainy.config import get_settings
+
 from .store import MemoryStore
 from .time_utils import days_since
-
-_DECAY_MULTIPLIER = 0.9  # importance *= this, per stale memory, each consolidation pass
-_DECAY_AFTER_DAYS = 14.0
-_ARCHIVE_IMPORTANCE_FLOOR = 0.05
-_ARCHIVE_AFTER_DAYS = 90.0
 
 
 class ConsolidationReport(BaseModel):
@@ -30,17 +27,18 @@ def _content_hash(content: str) -> str:
 
 
 def decay_and_archive(store: MemoryStore) -> tuple[int, int]:
+    settings = get_settings()
     decayed = 0
     archived = 0
     for memory in store.list_memories():
         basis = memory.last_accessed or memory.created_at
         age_days = days_since(basis)
-        if age_days <= _DECAY_AFTER_DAYS:
+        if age_days <= settings.memory_decay_after_days:
             continue
-        new_importance = max(0.0, memory.importance * _DECAY_MULTIPLIER)
+        new_importance = max(0.0, memory.importance * settings.memory_decay_multiplier)
         store.set_importance(memory.id, new_importance)
         decayed += 1
-        if new_importance < _ARCHIVE_IMPORTANCE_FLOOR and age_days > _ARCHIVE_AFTER_DAYS:
+        if new_importance < settings.memory_archive_importance_floor and age_days > settings.memory_archive_after_days:
             store.archive_memory(memory.id)
             archived += 1
     return decayed, archived

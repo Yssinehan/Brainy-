@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
+import logging
+
 from pydantic import BaseModel, Field
 
 from brainy.config import get_settings
-from brainy.memory.retrieve import semantic_search
 from brainy.memory.store import MemoryStore
 from brainy.memory.types import MemoryRecord
 from brainy.memory.vectors import VectorStore
 from brainy.prompts import load_prompt
 from brainy.router import Message, ModelRouter
 from brainy.router.schemas import Completion
+from brainy.rag.retrievers import HybridRetriever
+from brainy.rag.temporal import filter_recent
 
 NOT_IN_MEMORY = "I don't have anything in memory about that."
+log = logging.getLogger("brainy")
 
 
 class Source(BaseModel):
@@ -46,11 +50,14 @@ def ask(
     verify: bool = False,
 ) -> Answer:
     settings = get_settings()
-    chunks = semantic_search(store, vectors, router, question, k=k)
+    chunks = HybridRetriever(store, vectors, router).retrieve(question, k=k or settings.retrieval_top_k)
+    chunks = filter_recent(chunks, question)
+    log.info("retrieval hits=%s", len(chunks))
 
     top_similarity = chunks[0].similarity if chunks else 0.0
     if not chunks or top_similarity < settings.retrieval_min_similarity:
         store.log("system", "ask", {"question": question, "grounded": False})
+        log.info("rag not_in_memory")
         return Answer(text=NOT_IN_MEMORY, sources=[], grounded=False)
 
     context = _build_context(chunks)
@@ -68,6 +75,7 @@ def ask(
         alternate_texts = [alt.text for alt in verified.alternates]
     else:
         completion = router.complete(messages)
+    log.info("llm provider=%s", completion.provider)
 
     store.add_memory(
         MemoryRecord(kind="episodic", content=f"Asked: {question}", source="chat", importance=0.4)

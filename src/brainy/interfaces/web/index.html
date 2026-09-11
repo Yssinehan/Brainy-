@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0F1013" />
+    <title>Brainy — encre neuronale</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <div class="neural-field" aria-hidden="true"></div>
+    <div class="shell">
+      <aside class="rail" aria-label="Navigation principale">
+        <a class="brand" href="#chat" aria-label="Brainy, accueil">B<span>•</span></a>
+        <nav>
+          <button class="nav-item active" data-view="chat" aria-label="Chat"><span>✦</span><em>Chat</em></button>
+          <button class="nav-item" data-view="agent" aria-label="Agent"><span>⌁</span><em>Agent</em></button>
+          <button class="nav-item" data-view="voice" aria-label="Voix"><span>◖</span><em>Voix</em></button>
+          <button class="nav-item" data-view="vision" aria-label="Vision"><span>◉</span><em>Vision</em></button>
+        </nav>
+        <div class="rail-bottom">
+          <button class="nav-item" data-view="memory" aria-label="Ajouter une note"><span>+</span><em>Mémoire</em></button>
+          <div class="stat-orb" id="stats" title="Mémoire indexée">…</div>
+        </div>
+      </aside>
+
+      <main>
+        <section class="view active" id="chat" aria-labelledby="chat-title">
+          <header class="hero">
+            <p class="eyebrow">mémoire vivante / locale</p>
+            <h1 id="chat-title">À quoi<br /><i>penses-tu ?</i></h1>
+            <label class="verify-toggle"><input type="checkbox" id="chat-verify" /> <span></span> Vérifier auprès de plusieurs voix</label>
+          </header>
+          <div class="conversation" id="conversation" aria-live="polite">
+            <article class="empty-thought" id="empty-thought">
+              <span class="spark">✦</span>
+              <p>Une mémoire attend d’être interrogée.</p>
+              <small>Posez une question sur vos notes, ou ajoutez d’abord une pensée dans Mémoire.</small>
+            </article>
+          </div>
+          <form class="composer" id="ask-form">
+            <label class="sr-only" for="question">Votre question</label>
+            <textarea id="question" rows="1" placeholder="Écrivez une question à votre mémoire…" required></textarea>
+            <button class="send" type="submit" aria-label="Envoyer la question">↑</button>
+          </form>
+        </section>
+
+        <section class="view" id="agent" aria-labelledby="agent-title">
+          <header class="hero compact"><p class="eyebrow">intention → action → trace</p><h1 id="agent-title">Donnez un <i>cap</i><br />à l’agent.</h1></header>
+          <form class="agent-form" id="agent-form">
+            <label for="agent-goal">But</label><textarea id="agent-goal" placeholder="Ex. retrouver ce que j’ai décidé pour le déploiement" required></textarea>
+            <div class="permissions">
+              <label><input type="checkbox" id="allow-network" /> Autoriser le réseau <small>peut consulter le web</small></label>
+              <label><input type="checkbox" id="allow-write" /> Autoriser l’écriture <small>peut modifier son espace de travail</small></label>
+              <label class="step-control">Étapes max. <input id="max-steps" type="number" min="1" max="12" value="6" /></label>
+            </div>
+            <button class="amber-button" type="submit">Lancer l’exploration <span>→</span></button>
+          </form>
+          <div class="agent-result" id="agent-result" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="voice" aria-labelledby="voice-title">
+          <header class="hero compact"><p class="eyebrow">parole → pensée</p><h1 id="voice-title">Parlez à votre<br /><i>mémoire.</i></h1></header>
+          <div class="voice-stage">
+            <button class="mic" id="record-button" aria-pressed="false"><span>◖</span><b>Maintenez pour parler</b><small>le relâchement envoie votre note</small></button>
+            <label class="verify-toggle"><input type="checkbox" id="voice-verify" /> <span></span> Vérifier la réponse</label>
+          </div>
+          <div class="voice-result" id="voice-result" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="vision" aria-labelledby="vision-title">
+          <header class="hero compact"><p class="eyebrow">regard → mémoire</p><h1 id="vision-title">Ce que vous voyez<br /><i>compte aussi.</i></h1></header>
+          <div class="vision-layout">
+            <label class="drop-zone" id="drop-zone" for="image-file"><input id="image-file" type="file" accept="image/*" /><span class="image-mark">◉</span><b>Déposez une image</b><small>ou choisissez un fichier depuis cet appareil</small></label>
+            <div class="vision-actions">
+              <label for="image-question">Question facultative</label><input id="image-question" placeholder="Que souhaitez-vous observer ?" />
+              <div><button class="slate-button" id="describe-image" type="button">Décrire <span>↗</span></button><button class="amber-button" id="ingest-image" type="button">Ajouter à la mémoire <span>+</span></button></div>
+              <p>Décrire ne conserve rien. Ajouter réalise l’OCR et inscrit le contenu dans votre mémoire.</p>
+            </div>
+          </div>
+          <div class="vision-result" id="vision-result" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="memory" aria-labelledby="memory-title">
+          <header class="hero compact"><p class="eyebrow">un geste discret</p><h1 id="memory-title">Déposez une<br /><i>pensée.</i></h1></header>
+          <form class="memory-form" id="ingest-form">
+            <label for="note-label">Nom de la note</label><input id="note-label" value="note-collée" required />
+            <label for="note-text">Texte à retenir</label><textarea id="note-text" placeholder="Collez ici une note, une idée ou un extrait…" required></textarea>
+            <button class="amber-button" type="submit">Ancrer dans la mémoire <span>→</span></button>
+          </form>
+          <div class="ingest-result" id="ingest-result" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+    <template id="source-template"><details class="sources"><summary>Sources ancrées <span></span></summary><div class="source-list"></div></details></template>
+    <script>window.BRAINY_GATEWAY_TOKEN = __BRAINY_GATEWAY_TOKEN__;</script>
+    <script src="/ui/app.js" defer></script>
+  </body>
+</html>

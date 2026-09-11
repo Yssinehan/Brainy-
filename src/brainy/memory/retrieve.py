@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from brainy.config import get_settings
 from brainy.router import ModelRouter
 
+from .scoring import score_memory
 from .store import MemoryStore
 from .vectors import VectorStore
 
@@ -22,6 +23,7 @@ class RetrievedChunk(BaseModel):
     similarity: float
     importance: float
     rank_score: float
+    created_at: str = ""
 
 
 def _recency_decay(last_accessed_or_created: str, half_life_days: float) -> float:
@@ -64,7 +66,7 @@ def semantic_search(
         importance = memory.importance if memory else 0.5
         recency_basis = (memory.last_accessed or memory.created_at) if memory else chunk.created_at
         recency = _recency_decay(recency_basis, settings.memory_recency_half_life_days)
-        rank_score = 0.6 * similarity + 0.2 * importance + 0.2 * recency
+        rank_score = score_memory(memory, relevance=similarity, recency=recency, settings=settings).total
 
         results.append(
             RetrievedChunk(
@@ -75,6 +77,7 @@ def semantic_search(
                 similarity=similarity,
                 importance=importance,
                 rank_score=rank_score,
+                created_at=memory.created_at if memory else chunk.created_at,
             )
         )
         if touch and memory:

@@ -64,7 +64,7 @@ def _rag_grounded_case() -> EvalCase:
     def run():
         with tempfile.TemporaryDirectory() as tmp:
             store = MemoryStore(str(Path(tmp) / "test.db"))
-            vectors = VectorStore(str(Path(tmp) / "chroma"))
+            vectors = VectorStore(in_memory=True)
             router = _ScriptedRouter(canned_text="Yassine is building Personal LLM.")
             ingest_text(
                 store, vectors, router,
@@ -90,7 +90,7 @@ def _rag_ungrounded_case() -> EvalCase:
     def run():
         with tempfile.TemporaryDirectory() as tmp:
             store = MemoryStore(str(Path(tmp) / "test.db"))
-            vectors = VectorStore(str(Path(tmp) / "chroma"))
+            vectors = VectorStore(in_memory=True)
             router = _ScriptedRouter()
             result = ask(store, vectors, router, "anything at all, memory is empty")
             vectors.close()

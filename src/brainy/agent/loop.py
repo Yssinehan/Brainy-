@@ -3,15 +3,18 @@ agents are just different registries/permissions/prompts, not new code (docs/PRD
 
 from __future__ import annotations
 
-import json
-
 from brainy.memory.store import MemoryStore
-from brainy.prompts import load_prompt
-from brainy.router import Message, ModelRouter
+from brainy.router import ModelRouter
 from brainy.tools.registry import ToolRegistry
 from brainy.tools.schemas import ToolPermission
 
+from .executor import AgentExecutor
+from .planner import AgentPlanner
+from .reflection import AgentReflection
 from .schemas import AgentResult, AgentStep, StepRecord
+from .state import AgentState
+
+import json
 
 
 def _parse_tool_args(raw: str) -> tuple[dict, str | None]:
@@ -42,49 +45,30 @@ class Agent:
         self._allowed_permissions = set(allowed_permissions)
         self._max_steps = max_steps
 
-    def _build_messages(self, goal: str, transcript: list[tuple[AgentStep, str]]) -> list[Message]:
-        system = Message(role="system", content=load_prompt("agent_system").format(tools=self._registry.prompt_listing()))
-        lines = [f"Goal: {goal}"]
-        for step, observation in transcript:
-            lines.append(f"\nThought: {step.thought}")
-            if step.tool is not None:
-                lines.append(f"Action: {step.tool.name}({step.tool.args})")
-                lines.append(f"Observation: <observation>{observation}</observation>")
-        lines.append("\nWhat is your next step?" if transcript else "\nWhat is your first step?")
-        return [system, Message(role="user", content="\n".join(lines))]
-
     def run(self, goal: str) -> AgentResult:
-        transcript: list[tuple[AgentStep, str]] = []
-        records: list[StepRecord] = []
+        state = AgentState(goal=goal)
+        planner = AgentPlanner(self._router, self._registry)
+        executor = AgentExecutor(self._registry, self._allowed_permissions)
+        reflection = AgentReflection()
 
         for _ in range(self._max_steps):
-            messages = self._build_messages(goal, transcript)
-            completion = self._router.complete(messages, schema=AgentStep)
-            step = completion.parsed if isinstance(completion.parsed, AgentStep) else None
-            if step is None:
-                step = AgentStep(thought="(unparsed model output)", final_answer=completion.text)
+            step = planner.next_step(state)
 
             if step.tool is None:
                 final = step.final_answer or "Done."
-                records.append(StepRecord(thought=step.thought))
+                state.records.append(StepRecord(thought=step.thought))
                 self._store.log("agent", "final_answer", {"goal": goal, "answer": final})
-                return AgentResult(goal=goal, final_answer=final, steps=records, succeeded=True)
+                return AgentResult(goal=goal, final_answer=final, steps=state.records, succeeded=True)
 
-            parsed_args, args_error = _parse_tool_args(step.tool.args)
-            if args_error is not None:
-                observation = f"ERROR: invalid tool args - {args_error}"
-                tool_ok = False
-            else:
-                result = self._registry.invoke(step.tool.name, parsed_args, self._allowed_permissions)
-                observation = result.output if result.ok else f"ERROR: {result.error}"
-                tool_ok = result.ok
+            parsed_args, observation, tool_ok = executor.execute(step)
+            observation = reflection.summarize_observation(observation)
 
             self._store.log(
                 "agent",
                 "tool_call",
                 {"goal": goal, "tool": step.tool.name, "args": parsed_args, "ok": tool_ok},
             )
-            records.append(
+            state.records.append(
                 StepRecord(
                     thought=step.thought,
                     tool_name=step.tool.name,
@@ -92,12 +76,12 @@ class Agent:
                     observation=observation,
                 )
             )
-            transcript.append((step, observation))
+            state.transcript.append((step, observation))
 
         self._store.log("agent", "max_steps_exceeded", {"goal": goal, "steps": self._max_steps})
         return AgentResult(
             goal=goal,
             final_answer=f"I couldn't finish within {self._max_steps} steps. Try narrowing the goal.",
-            steps=records,
+            steps=state.records,
             succeeded=False,
         )

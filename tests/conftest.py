@@ -78,7 +78,9 @@ def store(tmp_path):
 
 @pytest.fixture
 def vectors(tmp_path):
-    return VectorStore(str(tmp_path / "chroma"))
+    # Unit tests exercise VectorStore's public behaviour, not Chroma's on-disk
+    # implementation. The ephemeral client keeps the suite hermetic on Windows.
+    return VectorStore(in_memory=True)
 
 
 @pytest.fixture

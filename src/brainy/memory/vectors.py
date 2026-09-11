@@ -2,17 +2,34 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from uuid import uuid4
+
 from brainy.config import get_settings
 
 _COLLECTION_NAME = "personal_llm_chunks"
 
 
 class VectorStore:
-    def __init__(self, persist_dir: str | None = None) -> None:
+    def __init__(self, persist_dir: str | None = None, *, in_memory: bool = False) -> None:
         import chromadb
 
+        if in_memory:
+            self._client = chromadb.EphemeralClient()
+            # Chroma shares an EphemeralClient process-wide. A unique collection
+            # prevents data from one unit-test fixture leaking into another.
+            self._collection = self._client.get_or_create_collection(
+                f"{_COLLECTION_NAME}_{uuid4().hex}"
+            )
+            return
+
         settings = get_settings()
-        self._client = chromadb.PersistentClient(path=persist_dir or settings.brainy_chroma_dir)
+        path = Path(persist_dir or settings.brainy_chroma_dir)
+        # Chroma's Rust backend does not consistently create an absolute persistence
+        # directory itself on Windows. Creating it here makes the storage boundary
+        # reliable for normal starts and isolated test databases alike.
+        path.mkdir(parents=True, exist_ok=True)
+        self._client = chromadb.PersistentClient(path=str(path))
         self._collection = self._client.get_or_create_collection(_COLLECTION_NAME)
 
     def add(self, ids: list[str], vectors: list[list[float]], metadatas: list[dict]) -> None:

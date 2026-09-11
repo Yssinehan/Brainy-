@@ -102,10 +102,16 @@ Or the FastAPI service:
 ```powershell
 & "venv\Scripts\python" -m uvicorn brainy.interfaces.api:app --reload
 ```
-The HTTP gateway is CSRF-hardened: every request needs the `X-DreamOS-Token` header
-(value auto-created at `data/gateway_token` on first request), and anything carrying a
-browser `Origin` header is rejected outright. The CLI and Streamlit UI use the engine
-in-process and need no token.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) to use the bundled **Brainy** web
+interface. It provides Chat, Agent, Voice, Vision, and a discreet text-ingestion view;
+it talks to the real FastAPI endpoints rather than a mock service. Browser speech uses
+the native Web Speech API, so it needs no server-side TTS endpoint.
+
+The HTTP gateway is CSRF-hardened: every API request needs the `X-DreamOS-Token` header
+(value auto-created at `data/gateway_token`). The bundled UI is served by this same
+FastAPI process, which injects the token into the local page and allows only an exact
+same-origin `Origin` header. Requests from any other browser origin still receive 403.
+The CLI and Streamlit UI use the engine in-process and need no token.
 
 ## Demo
 

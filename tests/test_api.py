@@ -61,6 +61,26 @@ def test_origin_header_is_rejected_even_with_a_valid_token(monkeypatch, store, v
     assert resp.status_code == 403
 
 
+def test_same_origin_request_with_a_valid_token_is_allowed(monkeypatch, store, vectors, router):
+    client = _client(monkeypatch, store, vectors, router)
+
+    resp = client.get(
+        "/stats",
+        headers={api.GATEWAY_TOKEN_HEADER: TOKEN, "Origin": "http://testserver"},
+    )
+
+    assert resp.status_code == 200
+
+
+def test_bundled_interface_is_public_and_embeds_the_gateway_token(monkeypatch, store, vectors, router):
+    client = _client(monkeypatch, store, vectors, router)
+
+    resp = client.get("/")
+
+    assert resp.status_code == 200
+    assert TOKEN in resp.text
+
+
 def test_ask_endpoint_requires_token(monkeypatch, store, vectors, router):
     client = _client(monkeypatch, store, vectors, router)
 

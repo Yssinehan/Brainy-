@@ -21,9 +21,8 @@ def test_run_cmd_exists():
     assert RUN_CMD.is_file()
 
 
-def test_starts_the_chat_ui_matching_jarvis_config():
-    # Exact command string from jarvis.config.json's "chat UI" action - no drift.
-    assert "venv\\Scripts\\python -m streamlit run src/personal_llm/interfaces/app.py" in _text()
+def test_starts_the_brainy_chat_ui():
+    assert "venv\\Scripts\\python -m streamlit run src/brainy/interfaces/app.py" in _text()
 
 
 def test_opens_the_browser_on_the_chat_ui_port():

@@ -42,6 +42,17 @@ class Settings(BaseSettings):
     retrieval_top_k: int = 8
     retrieval_min_similarity: float = 0.25
     memory_recency_half_life_days: float = 30.0
+    memory_score_relevance_weight: float = 0.60
+    memory_score_importance_weight: float = 0.15
+    memory_score_recency_weight: float = 0.15
+    memory_score_frequency_weight: float = 0.04
+    memory_score_confidence_weight: float = 0.03
+    memory_score_source_reliability_weight: float = 0.02
+    memory_score_user_interaction_weight: float = 0.01
+    memory_decay_after_days: float = 14.0
+    memory_decay_multiplier: float = 0.90
+    memory_archive_importance_floor: float = 0.05
+    memory_archive_after_days: float = 90.0
 
     agent_max_steps: int = 6
     whisper_model_size: str = "base"
