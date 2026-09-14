@@ -18,3 +18,9 @@ def test_personal_ai_engine_queries_knowledge_graph(store, vectors, router):
     engine = _engine(store, vectors, router)
 
     assert engine.query_knowledge("Unknown entity") == []
+
+
+def test_personal_ai_engine_exposes_configured_router(store, vectors, router):
+    engine = _engine(store, vectors, router)
+
+    assert engine.router is router

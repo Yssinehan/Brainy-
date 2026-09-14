@@ -1,4 +1,4 @@
-"""Router fallback logic tested against stub providers - never touches Gemini/Ollama for real."""
+"""Local router behavior tested against stubs without contacting Ollama."""
 
 import pytest
 
@@ -36,6 +36,12 @@ def test_router_uses_first_available_provider():
 
     assert result.text == "from p1"
     assert p2.called is False
+
+
+def test_default_chat_router_uses_ollama_only():
+    router = ModelRouter()
+
+    assert [provider.name for provider in router._chat_providers] == ["ollama"]
 
 
 def test_router_falls_back_when_first_unavailable():

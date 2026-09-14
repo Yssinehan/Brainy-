@@ -5,6 +5,7 @@ from __future__ import annotations
 from brainy.memory.store import MemoryStore
 from brainy.memory.vectors import VectorStore
 from brainy.router import ModelRouter
+from brainy.router import Message
 
 from .pipeline import Answer, ask
 
@@ -15,5 +16,6 @@ class RAGEngine:
         self._vectors = vectors
         self._router = router
 
-    def answer(self, question: str, *, k: int | None = None, verify: bool = False) -> Answer:
-        return ask(self._store, self._vectors, self._router, question, k=k, verify=verify)
+    def answer(self, question: str, *, k: int | None = None, verify: bool = False,
+               history: list[Message] | None = None) -> Answer:
+        return ask(self._store, self._vectors, self._router, question, k=k, verify=verify, history=history)

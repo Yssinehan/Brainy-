@@ -1,7 +1,7 @@
 """The one place the rest of the engine calls out to a model.
 
-Hybrid local+cloud (ADR 0002): embeddings are always local (free, offline).
-Chat completion prefers a healthy local Ollama if configured, else Gemini.
+Chat completion and embeddings are local. Ollama provides the chat model; OCR handles
+image text locally without sending user data to a cloud service.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import math
 
 from pydantic import BaseModel
 
-from .providers import ChatProvider, GeminiProvider, LocalEmbedder, OllamaProvider, RouterError
+from .providers import ChatProvider, LocalEmbedder, OllamaProvider, RouterError
 from .schemas import Completion, Message, VerifiedCompletion
 
 __all__ = ["ModelRouter", "RouterError"]
@@ -32,8 +32,9 @@ class ModelRouter:
         embedder: LocalEmbedder | None = None,
     ) -> None:
         self._ollama = OllamaProvider()
-        self._gemini = GeminiProvider()
-        self._chat_providers = chat_providers if chat_providers is not None else [self._ollama, self._gemini]
+        # Chat is intentionally Ollama-only. Do not silently send prompts to a
+        # cloud provider when the local endpoint is unavailable.
+        self._chat_providers = chat_providers if chat_providers is not None else [self._ollama]
         self._embedder = embedder or LocalEmbedder()
         self._ollama_healthy: bool | None = None
 
@@ -43,20 +44,10 @@ class ModelRouter:
     def provider_status(self) -> dict[str, bool]:
         return {provider.name: self._provider_available(provider) for provider in self._chat_providers}
 
-    def describe_image(self, image_path: str, question: str | None = None) -> str:
-        """Vision Q&A is Gemini-only (Ollama has no multimodal path here) - fails with the
-        same clear, actionable error style as complete() rather than a raw exception."""
-        import mimetypes
-        from pathlib import Path
-
-        if not self._provider_available(self._gemini):
-            raise RouterError(
-                "No GEMINI_API_KEY found - image Q&A requires Gemini (Ollama has no vision "
-                "path here). Get a free key at https://aistudio.google.com/apikey and add it to .env."
-            )
-        mime_type = mimetypes.guess_type(image_path)[0] or "image/png"
-        image_bytes = Path(image_path).read_bytes()
-        return self._gemini.describe_image(image_bytes, mime_type, question)
+    def warmup(self) -> None:
+        """Warm only the local chat model; embedding loading stays lazy until RAG is used."""
+        if self._provider_available(self._ollama):
+            self._ollama.warmup()
 
     def _provider_available(self, provider: ChatProvider) -> bool:
         if provider.name == "ollama":
@@ -77,7 +68,7 @@ class ModelRouter:
                 errors.append(f"{provider.name}: {exc}")
                 continue
         raise RouterError(
-            "No chat provider available. " + ("; ".join(errors) if errors else "Configure GEMINI_API_KEY or run Ollama.")
+            "No chat provider available. " + ("; ".join(errors) if errors else "Start Ollama and pull the configured model.")
         )
 
     def complete_with_verification(
@@ -100,7 +91,7 @@ class ModelRouter:
         if not completions:
             raise RouterError(
                 "No chat provider available for verification. "
-                + ("; ".join(errors) if errors else "Configure GEMINI_API_KEY or run Ollama.")
+                + ("; ".join(errors) if errors else "Start Ollama and pull the configured model.")
             )
 
         primary, *alternates = completions

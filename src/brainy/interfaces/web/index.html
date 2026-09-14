@@ -1,102 +1,52 @@
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0F1013" />
-    <title>Brainy — encre neuronale</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7fbff" />
+    <title>Brainy — Assistant d'étude intelligent</title>
     <link rel="stylesheet" href="/ui/styles.css" />
   </head>
   <body>
-    <div class="neural-field" aria-hidden="true"></div>
-    <div class="shell">
-      <aside class="rail" aria-label="Navigation principale">
-        <a class="brand" href="#chat" aria-label="Brainy, accueil">B<span>•</span></a>
-        <nav>
-          <button class="nav-item active" data-view="chat" aria-label="Chat"><span>✦</span><em>Chat</em></button>
-          <button class="nav-item" data-view="agent" aria-label="Agent"><span>⌁</span><em>Agent</em></button>
-          <button class="nav-item" data-view="voice" aria-label="Voix"><span>◖</span><em>Voix</em></button>
-          <button class="nav-item" data-view="vision" aria-label="Vision"><span>◉</span><em>Vision</em></button>
-        </nav>
-        <div class="rail-bottom">
-          <button class="nav-item" data-view="memory" aria-label="Ajouter une note"><span>+</span><em>Mémoire</em></button>
-          <div class="stat-orb" id="stats" title="Mémoire indexée">…</div>
+    <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+    <header class="topbar">
+      <a class="brand" href="#home" data-page-link><img class="brand-mark" src="/ui/assets/logo-brainy.png" alt="Logo Brainy" /><span>BRAINY</span></a>
+      <button class="menu-button" id="menu-button" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <nav id="navigation" aria-label="Navigation principale">
+        <a href="#home" class="nav-link active" data-page-link>Accueil</a>
+        <a href="#chat" class="nav-link" data-page-link>Chat</a>
+        <a href="#calendar" class="nav-link" data-page-link>Calendrier</a>
+      </nav>
+      <div class="topbar-actions"><span class="status-dot"></span><span class="online-label">Brainy est en ligne</span><button class="profile" aria-label="Profil">YS</button></div>
+    </header>
+
+    <main>
+      <section class="page active" id="home" aria-labelledby="home-title">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Votre espace d'apprentissage augmenté</p>
+          <h1 id="home-title">Étudiez avec plus de <span class="gradient-text">clarté.</span></h1>
+          <p class="hero-text">Brainy transforme vos cours, vos questions et vos échéances en un plan d'étude simple à suivre.</p>
+          <div class="hero-actions"><a href="#chat" class="button primary" data-page-link>Commencer une conversation <span>→</span></a><a href="#calendar" class="button secondary" data-page-link>Voir mon calendrier</a></div>
+          <div class="trust-row"><span>✦ Explications adaptées</span><span>✦ Mémoire privée</span><span>✦ Échéances organisées</span></div>
         </div>
-      </aside>
+        <div class="hero-visual reveal">
+          <div class="orbital orbital-a"></div><div class="orbital orbital-b"></div>
+          <div class="brain-core"><img src="/ui/assets/logo-brainy.png" alt="Logo officiel Brainy" /><i class="pulse p1"></i><i class="pulse p2"></i><i class="pulse p3"></i></div>
+          <div class="floating-card card-note"><span class="mini-icon violet">✦</span><div><small>Focus du jour</small><strong>Algèbre linéaire</strong><em>2 chapitres à revoir</em></div></div>
+          <div class="floating-card card-event"><span class="mini-icon blue">◷</span><div><small>Prochaine échéance</small><strong>Examen de maths</strong><em>25 sept. · 10:00</em></div></div>
+        </div>
+        <section class="intro-section"><div class="section-heading"><p class="eyebrow">Pensé pour vos études</p><h2>Un assistant qui suit le fil de votre apprentissage.</h2><p>Brainy rassemble les informations importantes pour vous laisser plus de place pour comprendre et progresser.</p></div><div class="feature-grid"><article class="feature-card"><span class="feature-icon">◌</span><h3>Comprendre</h3><p>Obtenez des explications adaptées à votre niveau et à vos cours.</p></article><article class="feature-card"><span class="feature-icon">⌘</span><h3>Organiser</h3><p>Transformez vos échanges et documents en actions concrètes.</p></article><article class="feature-card"><span class="feature-icon">◫</span><h3>Mémoriser</h3><p>Conservez vos notions clés dans une mémoire qui vous appartient.</p></article><article class="feature-card"><span class="feature-icon">◷</span><h3>Anticiper</h3><p>Repérez devoirs et examens avant qu'ils ne vous surprennent.</p></article></div></section>
+        <section class="steps-section"><p class="eyebrow">Un flux naturel</p><h2>De la question au calendrier, sans friction.</h2><div class="steps"><article><b>01</b><h3>Échangez avec Brainy</h3><p>Posez une question comme vous le feriez à un tuteur.</p></article><article><b>02</b><h3>Ajoutez vos ressources</h3><p>Importez vos notes, documents ou photos de cours.</p></article><article><b>03</b><h3>Restez à jour</h3><p>Les dates importantes trouvent leur place dans votre calendrier.</p></article></div></section>
+      </section>
 
-      <main>
-        <section class="view active" id="chat" aria-labelledby="chat-title">
-          <header class="hero">
-            <p class="eyebrow">mémoire vivante / locale</p>
-            <h1 id="chat-title">À quoi<br /><i>penses-tu ?</i></h1>
-            <label class="verify-toggle"><input type="checkbox" id="chat-verify" /> <span></span> Vérifier auprès de plusieurs voix</label>
-          </header>
-          <div class="conversation" id="conversation" aria-live="polite">
-            <article class="empty-thought" id="empty-thought">
-              <span class="spark">✦</span>
-              <p>Une mémoire attend d’être interrogée.</p>
-              <small>Posez une question sur vos notes, ou ajoutez d’abord une pensée dans Mémoire.</small>
-            </article>
-          </div>
-          <form class="composer" id="ask-form">
-            <label class="sr-only" for="question">Votre question</label>
-            <textarea id="question" rows="1" placeholder="Écrivez une question à votre mémoire…" required></textarea>
-            <button class="send" type="submit" aria-label="Envoyer la question">↑</button>
-          </form>
-        </section>
+      <section class="page chat-page" id="chat" aria-labelledby="chat-title">
+        <aside class="chat-sidebar"><button class="new-chat" id="new-chat">＋ Nouvelle conversation</button><p class="side-label">Aujourd'hui</p><button class="history-item active">Révisions de mathématiques</button><button class="history-item">Organisation de la semaine</button><p class="side-label">Raccourcis</p><button class="side-action" id="open-document">▣ Importer un document</button><button class="side-action" id="open-image">◧ Analyser une image</button><div class="sidebar-bottom"><a href="#calendar" data-page-link>◷ Ouvrir le calendrier →</a></div></aside>
+        <div class="chat-workspace"><header class="workspace-header"><div><p class="eyebrow">Assistant d'étude</p><h2 id="chat-title">Brainy AI <span class="online"><i></i> Online</span></h2></div><button class="icon-button" id="clear-chat" title="Effacer la conversation">⌫</button></header><div class="messages" id="messages" aria-live="polite"><div class="welcome-message"><div class="brain-avatar">B</div><h3>Bonjour, je suis Brainy.</h3><p>Je peux vous aider à comprendre un cours, préparer vos révisions ou repérer une échéance importante.</p><div class="prompt-chips"><button data-prompt="Explique-moi les dérivées simplement.">Expliquer une notion</button><button data-prompt="Aide-moi à organiser mes révisions.">Planifier mes révisions</button><button data-prompt="J'ai un examen de mathématiques le 25 septembre à 10h.">Ajouter une échéance</button></div></div></div><div class="typing hidden" id="typing"><span class="brain-avatar small">B</span><span>Brainy écrit</span><i></i><i></i><i></i></div><div class="composer-wrap"><div class="attachment-row" id="attachment-row"></div><form class="composer" id="chat-form"><button class="attach-button" type="button" id="document-button" title="Importer un document">▣</button><button class="attach-button" type="button" id="image-button" title="Importer une image">◧</button><textarea id="message-input" rows="1" placeholder="Écrivez votre message à Brainy…" aria-label="Message"></textarea><button class="send-button" id="send-button" type="submit" disabled aria-label="Envoyer">↑</button></form><small>Brainy peut faire des erreurs. Vérifiez les informations importantes.</small></div></div>
+      </section>
 
-        <section class="view" id="agent" aria-labelledby="agent-title">
-          <header class="hero compact"><p class="eyebrow">intention → action → trace</p><h1 id="agent-title">Donnez un <i>cap</i><br />à l’agent.</h1></header>
-          <form class="agent-form" id="agent-form">
-            <label for="agent-goal">But</label><textarea id="agent-goal" placeholder="Ex. retrouver ce que j’ai décidé pour le déploiement" required></textarea>
-            <div class="permissions">
-              <label><input type="checkbox" id="allow-network" /> Autoriser le réseau <small>peut consulter le web</small></label>
-              <label><input type="checkbox" id="allow-write" /> Autoriser l’écriture <small>peut modifier son espace de travail</small></label>
-              <label class="step-control">Étapes max. <input id="max-steps" type="number" min="1" max="12" value="6" /></label>
-            </div>
-            <button class="amber-button" type="submit">Lancer l’exploration <span>→</span></button>
-          </form>
-          <div class="agent-result" id="agent-result" aria-live="polite"></div>
-        </section>
-
-        <section class="view" id="voice" aria-labelledby="voice-title">
-          <header class="hero compact"><p class="eyebrow">parole → pensée</p><h1 id="voice-title">Parlez à votre<br /><i>mémoire.</i></h1></header>
-          <div class="voice-stage">
-            <button class="mic" id="record-button" aria-pressed="false"><span>◖</span><b>Maintenez pour parler</b><small>le relâchement envoie votre note</small></button>
-            <label class="verify-toggle"><input type="checkbox" id="voice-verify" /> <span></span> Vérifier la réponse</label>
-          </div>
-          <div class="voice-result" id="voice-result" aria-live="polite"></div>
-        </section>
-
-        <section class="view" id="vision" aria-labelledby="vision-title">
-          <header class="hero compact"><p class="eyebrow">regard → mémoire</p><h1 id="vision-title">Ce que vous voyez<br /><i>compte aussi.</i></h1></header>
-          <div class="vision-layout">
-            <label class="drop-zone" id="drop-zone" for="image-file"><input id="image-file" type="file" accept="image/*" /><span class="image-mark">◉</span><b>Déposez une image</b><small>ou choisissez un fichier depuis cet appareil</small></label>
-            <div class="vision-actions">
-              <label for="image-question">Question facultative</label><input id="image-question" placeholder="Que souhaitez-vous observer ?" />
-              <div><button class="slate-button" id="describe-image" type="button">Décrire <span>↗</span></button><button class="amber-button" id="ingest-image" type="button">Ajouter à la mémoire <span>+</span></button></div>
-              <p>Décrire ne conserve rien. Ajouter réalise l’OCR et inscrit le contenu dans votre mémoire.</p>
-            </div>
-          </div>
-          <div class="vision-result" id="vision-result" aria-live="polite"></div>
-        </section>
-
-        <section class="view" id="memory" aria-labelledby="memory-title">
-          <header class="hero compact"><p class="eyebrow">un geste discret</p><h1 id="memory-title">Déposez une<br /><i>pensée.</i></h1></header>
-          <form class="memory-form" id="ingest-form">
-            <label for="note-label">Nom de la note</label><input id="note-label" value="note-collée" required />
-            <label for="note-text">Texte à retenir</label><textarea id="note-text" placeholder="Collez ici une note, une idée ou un extrait…" required></textarea>
-            <button class="amber-button" type="submit">Ancrer dans la mémoire <span>→</span></button>
-          </form>
-          <div class="ingest-result" id="ingest-result" aria-live="polite"></div>
-        </section>
-      </main>
-    </div>
-    <template id="source-template"><details class="sources"><summary>Sources ancrées <span></span></summary><div class="source-list"></div></details></template>
-    <script>window.BRAINY_GATEWAY_TOKEN = __BRAINY_GATEWAY_TOKEN__;</script>
-    <script src="/ui/app.js" defer></script>
+      <section class="page calendar-page" id="calendar" aria-labelledby="calendar-title"><header class="calendar-header"><div><p class="eyebrow">Organisation intelligente</p><h1 id="calendar-title">Mon calendrier</h1><p>Toutes vos échéances importantes, organisées avec Brainy.</p></div><div class="calendar-actions"><a class="button secondary" href="#chat" data-page-link>Demander à Brainy</a><button class="button primary" id="new-event">＋ Nouvel événement</button></div></header><div class="stats-grid" id="calendar-stats"></div><div class="calendar-toolbar"><div class="month-nav"><button id="previous-month" aria-label="Mois précédent">←</button><h2 id="month-label"></h2><button id="next-month" aria-label="Mois suivant">→</button><button class="today-button" id="today-button">Aujourd'hui</button></div><div class="view-switch"><button class="active">Mois</button><button disabled>Semaine</button><button disabled>Jour</button></div></div><div class="calendar-layout"><div class="calendar-panel"><div class="weekdays"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div><div class="calendar-grid" id="calendar-grid"></div></div><aside class="calendar-sidebar"><div class="sidebar-title"><h3>À venir</h3><button id="filter-button">⌘ Filtrer</button></div><div id="event-list"></div><div class="legend"><span><i class="exam"></i> Examens</span><span><i class="course"></i> Cours</span><span><i class="assignment"></i> Devoirs</span><span><i class="personal"></i> Personnel</span></div></aside></div></section>
+    </main>
+    <div class="modal-backdrop hidden" id="modal-backdrop"><section class="modal" id="modal" role="dialog" aria-modal="true"></section></div><div class="toast-region" id="toast-region" aria-live="polite"></div>
+    <script>window.BRAINY_GATEWAY_TOKEN = __BRAINY_GATEWAY_TOKEN__;</script><script src="/ui/app.js"></script>
   </body>
 </html>

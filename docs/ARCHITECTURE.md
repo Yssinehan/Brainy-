@@ -14,7 +14,7 @@
                  |       |                 |                |         |
                  |       v                 v                v         |
                  |   Retrieve         Model Router     Tool layer(P1) |
-                 |   (rank)          (Gemini|Ollama)   (typed+audited)|
+                 |   (rank)            (Ollama)        (typed+audited)|
                  |       |                                            |
                  |  +----v-------------------- Memory ---------------+|
                  |  | episodic(SQLite) semantic/vector(Chroma)       ||
@@ -49,7 +49,7 @@ retrieve.py -> store.py: fetch memory rows for hit ids
 retrieve.py -> pipeline: ranked chunks (similarity, importance, recency)
 pipeline -> (if top_score < threshold): return "not in memory"
 pipeline -> router.complete(system + grounded_context + question, schema=Answer)
-router -> Gemini (or Ollama if configured/healthy)
+router -> Ollama
 router -> pipeline: Answer{text, cited_sources}
 pipeline -> store.py: insert memories(kind=episodic, "asked: ...")
 pipeline -> CLI/API: answer + sources

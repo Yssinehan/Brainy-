@@ -21,12 +21,12 @@ def test_run_cmd_exists():
     assert RUN_CMD.is_file()
 
 
-def test_starts_the_brainy_chat_ui():
-    assert "venv\\Scripts\\python -m streamlit run src/brainy/interfaces/app.py" in _text()
+def test_starts_the_brainy_api():
+    assert "venv\\Scripts\\python -m uvicorn brainy.interfaces.api:app" in _text()
 
 
-def test_opens_the_browser_on_the_chat_ui_port():
-    assert "http://localhost:8501" in _text()
+def test_does_not_open_a_browser_interface():
+    assert "Start-Process" not in _text()
 
 
 def test_no_env_var_line_since_config_sets_none():

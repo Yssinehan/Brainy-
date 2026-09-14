@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import math
+import logging
+import time
 from datetime import datetime, timezone
 
 from pydantic import BaseModel
@@ -13,6 +15,8 @@ from brainy.router import ModelRouter
 from .scoring import score_memory
 from .store import MemoryStore
 from .vectors import VectorStore
+
+log = logging.getLogger("brainy")
 
 
 class RetrievedChunk(BaseModel):
@@ -48,11 +52,17 @@ def semantic_search(
     settings = get_settings()
     k = k or settings.retrieval_top_k
 
+    embedding_started = time.perf_counter()
     query_vector = router.embed([query])[0]
+    embedding_ms = (time.perf_counter() - embedding_started) * 1000
+    chroma_started = time.perf_counter()
     hits = vectors.query(query_vector, k=k)
+    chroma_ms = (time.perf_counter() - chroma_started) * 1000
     if not hits:
+        log.info("[PERF] Embeddings: %.1f ms | ChromaDB: %.1f ms | SQLite: 0.0 ms", embedding_ms, chroma_ms)
         return []
 
+    sqlite_started = time.perf_counter()
     chunk_ids = [hit_id for hit_id, _sim, _meta in hits]
     chunks_by_id = {c.id: c for c in store.get_chunks(chunk_ids)}
     memories_by_vector_id = store.get_memories_by_vector_ids(chunk_ids)
@@ -84,4 +94,5 @@ def semantic_search(
             store.touch_memory(memory.id)
 
     results.sort(key=lambda r: r.rank_score, reverse=True)
+    log.info("[PERF] Embeddings: %.1f ms | ChromaDB: %.1f ms | SQLite: %.1f ms", embedding_ms, chroma_ms, (time.perf_counter() - sqlite_started) * 1000)
     return results

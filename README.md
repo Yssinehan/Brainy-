@@ -47,10 +47,9 @@ Full design docs live in [`docs/`](docs/): [PRD](docs/PRD.md), [Technical Design
 - **Voice** (v2): transcribe audio locally (`transcribe`, `ask-voice`) via `faster-whisper`
   - free, offline, no API key - and optionally speak the answer back (`--speak`, `pyttsx3`).
 - **Vision** (v2): ingest screenshots/photos of notes via local OCR (images just work with
-  `ingest`, same as PDFs), and ask Gemini about an image (`describe-image`). See
-  [ADR 0006](docs/DECISIONS/0006-voice-and-vision-local-first.md).
-- Runs on a **hybrid model router**: local embeddings (free, offline, no API key needed
-  for ingest/retrieve) + Gemini free tier or an optional local Ollama model for generation.
+  `ingest`, same as PDFs). See [ADR 0006](docs/DECISIONS/0006-voice-and-vision-local-first.md).
+- Runs on a **local-first model router**: local embeddings plus Ollama for all chat,
+  RAG generation, and agent actions.
 
 ## Quickstart (under 5 minutes)
 
@@ -61,8 +60,9 @@ py -3.12 -m venv venv
 & "venv\Scripts\python" -m pip install -r requirements.txt
 & "venv\Scripts\python" -m pip install -e .
 
-# Copy .env.example to .env and add your free Gemini key (https://aistudio.google.com/apikey)
-# Ingest and retrieve work with NO key at all - only `ask` needs a chat provider.
+# Copy .env.example to .env, install Ollama, then pull the configured model:
+ollama pull llama3.2:3b
+# Ingest and retrieve work with no model; `ask` requires Ollama to be running.
 
 # `pip install -e .` also installs a `BRAINY` console script - check it first:
 & "venv\Scripts\BRAINY.exe" --version
@@ -90,7 +90,6 @@ py -3.12 -m venv venv
 & "venv\Scripts\python" -m brainy.interfaces.cli transcribe "recording.wav"
 & "venv\Scripts\python" -m brainy.interfaces.cli ask-voice "recording.wav" --speak
 & "venv\Scripts\python" -m brainy.interfaces.cli ingest "screenshot.png"          # OCR, needs Tesseract installed
-& "venv\Scripts\python" -m brainy.interfaces.cli describe-image "photo.jpg"       # needs GEMINI_API_KEY
 ```
 
 Or the Streamlit chat UI:
@@ -136,11 +135,11 @@ Interfaces (CLI / FastAPI / Streamlit)
    Personal LLM Engine
    RAG pipeline -> Reasoning -> Agent (plan-act-reflect loop) -> Proactive review
         |
-   Retrieve <-> Model Router (Gemini | Ollama, verified) <-> Tool layer (permission-gated, audited)
+   Retrieve <-> Model Router (Ollama) <-> Tool layer (permission-gated, audited)
         |                                                          |
    Memory: SQLite (episodic/semantic/procedural) + Chroma (vectors) + Knowledge Graph
         ^                                                          |
-   External integrations (Gmail/Drive, ingested idempotently)   Voice (STT/TTS) + Vision (OCR/Gemini)
+   External integrations (Gmail/Drive, ingested idempotently)   Voice (STT/TTS) + Vision (local OCR)
 ```
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for full diagrams and schemas,
@@ -158,7 +157,7 @@ and [ADR 0006](docs/DECISIONS/0006-voice-and-vision-local-first.md) for voice/vi
 | v0.2 - Agent + typed tool layer | **Done** |
 | v0.3 - Proactive review, router verification | **Done** |
 | v1.0 - Real integrations (Gmail/Drive), installable package, `doctor` | **Done** |
-| v2 - Voice (STT/TTS), vision (OCR + Gemini) | **Done** |
+| v2 - Voice (STT/TTS), vision (local OCR) | **Done** |
 | v3 - Multi-device sync, SDK/marketplace, voice cloning | Speculative |
 
 Full detail in [`docs/ROADMAP.md`](docs/ROADMAP.md).

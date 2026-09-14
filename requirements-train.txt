@@ -1,0 +1,10 @@
+# Dépendances réservées à l'entraînement LoRA sur une machine Linux avec GPU NVIDIA.
+# Installer PyTorch CUDA séparément, suivant https://pytorch.org/get-started/locally/
+torch==2.5.1
+transformers==4.48.3
+datasets==3.2.0
+accelerate==1.3.0
+peft==0.14.0
+trl==0.14.0
+bitsandbytes==0.45.1
+sentencepiece==0.2.0

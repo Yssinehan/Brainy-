@@ -32,11 +32,16 @@ def _cross_platform_default_root() -> Path:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.5-flash-lite"
-
     ollama_host: str = "http://localhost:11434"
     ollama_model: str = "llama3.2:3b"
+    ollama_timeout_seconds: float = 90.0
+    # Tuned for responsive CPU-only local inference. Override in .env for longer answers.
+    # Keep interactive chat responsive on CPU-only laptops. These remain
+    # configurable through .env for users who prefer longer answers.
+    ollama_max_tokens: int = 64
+    ollama_num_ctx: int = 2048
+    ollama_num_thread: int = 0
+    ollama_keep_alive: str = "30m"
 
     embedding_model: str = "all-MiniLM-L6-v2"
 
@@ -49,7 +54,8 @@ class Settings(BaseSettings):
 
     night_shift_log_path: str = "../NIGHT_SHIFT.md"
 
-    retrieval_top_k: int = 8
+    retrieval_top_k: int = 2
+    rag_context_max_chars: int = 1200
     retrieval_min_similarity: float = 0.25
     memory_recency_half_life_days: float = 30.0
     memory_score_relevance_weight: float = 0.60

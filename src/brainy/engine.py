@@ -19,6 +19,7 @@ from brainy.rag import Answer, RAGEngine
 from brainy.recommendation import Recommendation, RecommendationEngine
 from brainy.review.weekly import ReviewReport, generate_review
 from brainy.router import ModelRouter
+from brainy.router import Message
 from brainy.tools import build_default_registry
 from brainy.voice import SpeechToText, TextToSpeech
 
@@ -52,9 +53,15 @@ class PersonalAIEngine:
         self.proactive = ProactiveAssistant(dependencies.store)
         self.conversation_id = _SESSION_ID
 
-    def process_message(self, message: str, *, k: int | None = None, verify: bool = False) -> Answer:
+    @property
+    def router(self) -> ModelRouter:
+        """Expose the configured model router to API health checks and callers."""
+        return self._dependencies.router
+
+    def process_message(self, message: str, *, k: int | None = None, verify: bool = False,
+                        history: list[Message] | None = None) -> Answer:
         log.info("request chat verify=%s", verify)
-        answer = self.generate_response(message, k=k, verify=verify)
+        answer = self.generate_response(message, k=k, verify=verify, history=history)
         log.info("response grounded=%s sources=%s", answer.grounded, len(answer.sources))
         return answer
 
@@ -106,8 +113,9 @@ class PersonalAIEngine:
     def inspect_proactive(self, *, limit: int = 5) -> list[ProactiveInsight]:
         return self.proactive.inspect(limit=limit)
 
-    def generate_response(self, message: str, *, k: int | None = None, verify: bool = False) -> Answer:
-        return self.rag.answer(message, k=k, verify=verify)
+    def generate_response(self, message: str, *, k: int | None = None, verify: bool = False,
+                          history: list[Message] | None = None) -> Answer:
+        return self.rag.answer(message, k=k, verify=verify, history=history)
 
     def trigger_proactive_actions(self, *, days: int = 7) -> ReviewReport:
         return generate_review(self._dependencies.store, self._dependencies.router, days=days)

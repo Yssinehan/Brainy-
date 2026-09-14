@@ -72,12 +72,13 @@ def test_same_origin_request_with_a_valid_token_is_allowed(monkeypatch, store, v
     assert resp.status_code == 200
 
 
-def test_bundled_interface_is_public_and_embeds_the_gateway_token(monkeypatch, store, vectors, router):
+def test_web_interface_is_served(monkeypatch, store, vectors, router):
     client = _client(monkeypatch, store, vectors, router)
 
     resp = client.get("/")
 
     assert resp.status_code == 200
+    assert "BRAINY" in resp.text
     assert TOKEN in resp.text
 
 

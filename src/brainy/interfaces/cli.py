@@ -268,18 +268,6 @@ def ask_voice(
         typer.echo(f"\n(spoken answer saved to {out_path})")
 
 
-@app.command(name="describe-image")
-def describe_image(image_path: str, question: str | None = typer.Argument(None)) -> None:
-    """Ask Gemini about an image (vision Q&A - requires GEMINI_API_KEY; Ollama has no vision path here)."""
-    engine = build_engine()
-    try:
-        description = engine.router.describe_image(image_path, question)
-    except RouterError as exc:
-        typer.echo(f"error: {exc}")
-        raise typer.Exit(code=1)
-    typer.echo(description)
-
-
 @app.command()
 def doctor() -> None:
     """Check environment health - version, data paths, provider status. Run this first."""
@@ -296,7 +284,7 @@ def doctor() -> None:
     for name, available in status.items():
         typer.echo(f"provider {name}: {'available' if available else 'not configured'}")
     if not any(status.values()):
-        typer.echo("\n[!] No chat provider available - set GEMINI_API_KEY in .env, or run Ollama locally.")
+        typer.echo("\n[!] No chat provider available: Ollama is unavailable - start it and pull the model configured in OLLAMA_MODEL.")
 
     typer.echo()
     stats_report = engine.store.stats()

@@ -1,9 +1,9 @@
-# ADR 0002: Hybrid local+cloud model router, Gemini default, Ollama optional
+# ADR 0002: Ollama-only chat model router
 
 **Status:** Accepted
 
 **Context:** User wants privacy/offline capability where possible but needs strong reasoning quality and zero-cost operation today.
 
-**Decision:** `ModelRouter` always uses a local embedding model (`sentence-transformers`) for `embed()`. For `complete()`, it health-checks a configured Ollama endpoint and uses it if reachable; otherwise falls back to Gemini free tier. Neither provider is a hard dependency - the engine degrades gracefully.
+**Decision:** `ModelRouter` always uses a local embedding model (`sentence-transformers`) for `embed()`. For `complete()`, it health-checks the configured Ollama endpoint and uses it exclusively. It never falls back to Gemini, so chat prompts remain within the Ollama deployment.
 
-**Consequences:** Ingest/retrieve work fully offline with no API key. Generation requires either Ollama running locally or a Gemini API key. Adding a third provider (e.g. paid OpenAI) later is a new `Provider` class behind the same interface - no changes elsewhere.
+**Consequences:** Ingest/retrieve work fully offline with no API key. Generation requires Ollama to be running and to contain the configured model. Gemini remains an opt-in dependency for the separate image-description endpoint only. Adding a third provider later is a new `Provider` class behind the same interface, but must not become an implicit chat fallback.

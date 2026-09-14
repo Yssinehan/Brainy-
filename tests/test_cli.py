@@ -33,7 +33,7 @@ def test_doctor_reports_provider_status_and_stats(monkeypatch, store, vectors, r
 
 
 def test_doctor_warns_when_no_provider_available(monkeypatch, store, vectors, router):
-    router.provider_status = lambda: {"gemini": False, "ollama": False}
+    router.provider_status = lambda: {"ollama": False}
     monkeypatch.setattr(cli, "build_engine", lambda: _fake_engine(store, vectors, router))
 
     result = runner.invoke(cli.app, ["doctor"])

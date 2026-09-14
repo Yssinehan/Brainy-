@@ -7,3 +7,12 @@ data/
 *.egg-info/
 handoffs/
 graphify-out/
+artifacts/
+
+.coverage
+htmlcov/
+dist/
+build/
+*.egg
+.vscode/
+.idea/

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import time
 from typing import Protocol
 
 from pydantic import BaseModel
@@ -11,9 +10,6 @@ from pydantic import BaseModel
 from brainy.config import get_settings
 
 from .schemas import Completion, Message
-
-_MAX_RETRIES = 3
-
 
 class RouterError(Exception):
     """User-facing error the caller can display verbatim."""
@@ -27,14 +23,8 @@ class ChatProvider(Protocol):
     def is_available(self) -> bool: ...
 
 
-def _messages_to_gemini(messages: list[Message]) -> tuple[str, str]:
-    system = "\n".join(m.content for m in messages if m.role == "system")
-    convo = "\n\n".join(f"{m.role}: {m.content}" for m in messages if m.role != "system")
-    return system, convo
-
-
-class GeminiProvider:
-    name = "gemini"
+class OllamaProvider:
+    name = "ollama"
 
     def __init__(self) -> None:
         self._settings = get_settings()
@@ -42,78 +32,12 @@ class GeminiProvider:
 
     def _get_client(self):
         if self._client is None:
-            from google import genai
-
-            if not self._settings.gemini_api_key:
-                raise RouterError(
-                    "No GEMINI_API_KEY found. Get a free key at https://aistudio.google.com/apikey "
-                    "and add it to .env as GEMINI_API_KEY=your-key-here."
-                )
-            self._client = genai.Client(api_key=self._settings.gemini_api_key)
-        return self._client
-
-    def is_available(self) -> bool:
-        return bool(self._settings.gemini_api_key)
-
-    def complete(self, messages: list[Message], schema: type[BaseModel] | None = None) -> Completion:
-        from google.genai import errors as genai_errors
-        from google.genai import types
-
-        client = self._get_client()
-        system, convo = _messages_to_gemini(messages)
-        config_kwargs: dict = {"system_instruction": system, "temperature": 0.3}
-        if schema is not None:
-            config_kwargs["response_mime_type"] = "application/json"
-            config_kwargs["response_schema"] = schema
-
-        last_err: Exception | None = None
-        for attempt in range(_MAX_RETRIES):
-            try:
-                response = client.models.generate_content(
-                    model=self._settings.gemini_model,
-                    contents=convo,
-                    config=types.GenerateContentConfig(**config_kwargs),
-                )
-                parsed = getattr(response, "parsed", None) if schema is not None else None
-                return Completion(
-                    text=response.text or "",
-                    parsed=parsed,
-                    provider=self.name,
-                    model=self._settings.gemini_model,
-                )
-            except genai_errors.ClientError as exc:
-                if getattr(exc, "code", None) != 429:
-                    raise RouterError(f"Gemini rejected the request: {getattr(exc, 'message', exc)}")
-                last_err = exc
-                if attempt < _MAX_RETRIES - 1:
-                    time.sleep(4 * (attempt + 1))
-            except genai_errors.ServerError as exc:
-                last_err = exc
-                if attempt < _MAX_RETRIES - 1:
-                    time.sleep(4 * (attempt + 1))
-        raise RouterError(f"Gemini is unavailable after {_MAX_RETRIES} attempts: {last_err}")
-
-    def describe_image(self, image_bytes: bytes, mime_type: str, question: str | None = None) -> str:
-        from google.genai import errors as genai_errors
-        from google.genai import types
-
-        client = self._get_client()
-        prompt = question or "Describe this image in detail."
-        try:
-            response = client.models.generate_content(
-                model=self._settings.gemini_model,
-                contents=[types.Part.from_bytes(data=image_bytes, mime_type=mime_type), prompt],
+            import ollama
+            self._client = ollama.Client(
+                host=self._settings.ollama_host,
+                timeout=self._settings.ollama_timeout_seconds,
             )
-            return response.text or ""
-        except (genai_errors.ClientError, genai_errors.ServerError) as exc:
-            raise RouterError(f"Gemini vision request failed: {getattr(exc, 'message', exc)}")
-
-
-class OllamaProvider:
-    name = "ollama"
-
-    def __init__(self) -> None:
-        self._settings = get_settings()
+        return self._client
 
     def is_available(self) -> bool:
         try:
@@ -124,11 +48,31 @@ class OllamaProvider:
         except Exception:
             return False
 
-    def complete(self, messages: list[Message], schema: type[BaseModel] | None = None) -> Completion:
-        import ollama
+    def warmup(self) -> None:
+        """Ask Ollama to keep the configured model resident before the first chat."""
+        try:
+            import httpx
+            httpx.post(
+                f"{self._settings.ollama_host}/api/generate",
+                json={"model": self._settings.ollama_model, "prompt": "", "stream": False,
+                      "keep_alive": self._settings.ollama_keep_alive},
+                timeout=self._settings.ollama_timeout_seconds,
+            ).raise_for_status()
+        except Exception as exc:
+            # A missing Ollama must not prevent the web interface from starting.
+            raise RouterError(f"Ollama warmup failed: {exc}") from exc
 
-        client = ollama.Client(host=self._settings.ollama_host)
-        kwargs: dict = {}
+    def complete(self, messages: list[Message], schema: type[BaseModel] | None = None) -> Completion:
+        client = self._get_client()
+        # A CPU-hosted local model may otherwise generate until it emits an EOS token,
+        # leaving the browser waiting indefinitely for a response.
+        options: dict[str, int] = {
+            "num_predict": self._settings.ollama_max_tokens,
+            "num_ctx": self._settings.ollama_num_ctx,
+        }
+        if self._settings.ollama_num_thread > 0:
+            options["num_thread"] = self._settings.ollama_num_thread
+        kwargs: dict = {"options": options, "keep_alive": self._settings.ollama_keep_alive}
         if schema is not None:
             kwargs["format"] = schema.model_json_schema()
 
