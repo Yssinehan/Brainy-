@@ -1,6 +1,6 @@
-# Personal LLM
+# BRAINY — Personal AI Memory Assistant
 
-[![CI](https://github.com/syzayd/BRAINY/actions/workflows/ci.yml/badge.svg)](https://github.com/syzayd/BRAINY/actions/workflows/ci.yml)
+[![CI](https://github.com/Yssinehan/Brainy-/actions/workflows/ci.yml/badge.svg)](https://github.com/Yssinehan/Brainy-/actions/workflows/ci.yml)
 ![Tests](https://img.shields.io/badge/tests-143%20passed%20offline-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -55,7 +55,7 @@ Full design docs live in [`docs/`](docs/): [PRD](docs/PRD.md), [Technical Design
 ## Quickstart (under 5 minutes)
 
 ```powershell
-git clone https://github.com/syzayd/BRAINY
+git clone https://github.com/Yssinehan/Brainy-
 cd BRAINY
 py -3.12 -m venv venv
 & "venv\Scripts\python" -m pip install -r requirements.txt
